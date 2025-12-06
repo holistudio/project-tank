@@ -1,5 +1,8 @@
 let tanks = [];
 let bullets;
+let gridState = [];
+const gridCols = 10;
+const gridRows = 10;
 const tankSpeed = 3;
 const turretSpeed = 0.05;
 const bulletSpeed = 7;
@@ -26,6 +29,14 @@ function setup() {
   });
   bullets = [];
   rectMode(CENTER);
+
+  // Initialize grid state
+  for (let i = 0; i < gridCols; i++) {
+    gridState[i] = [];
+    for (let j = 0; j < gridRows; j++) {
+      gridState[i][j] = false;
+    }
+  }
 }
 
 function draw() {
@@ -126,16 +137,31 @@ function fireBullet(tank) {
 }
 
 function drawGrid() {
+  const gridSize = 100;
+  push(); // Isolate drawing styles
+  rectMode(CORNER); // Use corner mode for grid drawing
+
+  // Draw filled squares
+  noStroke();
+  for (let i = 0; i < gridCols; i++) {
+    for (let j = 0; j < gridRows; j++) {
+      if (gridState[i][j]) {
+        fill('green');
+        rect(i * gridSize, j * gridSize, gridSize, gridSize);
+      }
+    }
+  }
+
   // Draw grid lines
   stroke('green');
   strokeWeight(1);
-  const gridSize = 100;
   for (let x = gridSize; x < width; x += gridSize) {
     line(x, 0, x, height);
   }
   for (let y = gridSize; y < height; y += gridSize) {
     line(0, y, width, y);
   }
+  pop(); // Restore original drawing styles (including rectMode)
 }
 
 function drawTanks() {
@@ -172,6 +198,7 @@ function updateBullets() {
     const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
 
     if (inNeighborSquare && !inCenterSquare) {
+      gridState[bulletGridX][bulletGridY] = true; // Fill the cell
       bullets.splice(i, 1);
       continue; // Skip to the next bullet
     }
