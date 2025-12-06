@@ -12,6 +12,7 @@ function setup() {
     y: height / 2,
     w: 50,
     h: 40,
+    player: 1,
     turretAngle: 0
   });
   // Player 2 (Arrow Keys)
@@ -20,6 +21,7 @@ function setup() {
     y: height / 2,
     w: 50,
     h: 40,
+    player: 2,
     turretAngle: PI
   });
   bullets = [];
@@ -108,15 +110,25 @@ function keyPressed() {
 }
 
 function fireBullet(tank) {
+  const gridSize = 100;
   let bullet = {
     x: tank.x,
     y: tank.y,
-    angle: tank.turretAngle
+    angle: tank.turretAngle,
+    owner: tank.player
   };
+
+  // For player 1, store the grid location at the time of firing
+  if (tank.player === 1) {
+    bullet.originGridX = floor(tank.x / gridSize);
+    bullet.originGridY = floor(tank.y / gridSize);
+  }
+
   bullets.push(bullet);
 }
 
 function drawGrid() {
+  // Draw grid lines
   stroke('green');
   strokeWeight(1);
   const gridSize = 100;
@@ -150,11 +162,29 @@ function drawTanks() {
 
 function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
-    bullets[i].x += bulletSpeed * cos(bullets[i].angle);
-    bullets[i].y += bulletSpeed * sin(bullets[i].angle);
+    let bullet = bullets[i];
+
+    // For player 1, check for collision with neighboring squares
+    if (bullet.owner === 1) {
+      const gridSize = 100;
+      let bulletGridX = floor(bullet.x / gridSize);
+      let bulletGridY = floor(bullet.y / gridSize);
+
+      // Check if the bullet is in a neighboring square (but not the center one)
+      const inNeighborSquare = Math.abs(bulletGridX - bullet.originGridX) <= 1 && Math.abs(bulletGridY - bullet.originGridY) <= 1;
+      const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
+
+      if (inNeighborSquare && !inCenterSquare) {
+        bullets.splice(i, 1);
+        continue; // Skip to the next bullet
+      }
+    }
+
+    bullet.x += bulletSpeed * cos(bullet.angle);
+    bullet.y += bulletSpeed * sin(bullet.angle);
 
     // Remove bullets that go off-screen
-    if (bullets[i].x < 0 || bullets[i].x > width || bullets[i].y < 0 || bullets[i].y > height) {
+    if (bullet.x < 0 || bullet.x > width || bullet.y < 0 || bullet.y > height) {
       bullets.splice(i, 1);
     }
   }
