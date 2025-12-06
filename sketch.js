@@ -146,7 +146,7 @@ function drawGrid() {
   for (let i = 0; i < gridCols; i++) {
     for (let j = 0; j < gridRows; j++) {
       if (gridState[i][j]) {
-        fill('green');
+        fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
         rect(i * gridSize, j * gridSize, gridSize, gridSize);
       }
     }
