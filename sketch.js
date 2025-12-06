@@ -29,6 +29,8 @@ function setup() {
 function draw() {
   background(0);
 
+  drawGrid();
+
   handleInput();
 
   updateBullets();
@@ -112,6 +114,18 @@ function fireBullet(tank) {
     angle: tank.turretAngle
   };
   bullets.push(bullet);
+}
+
+function drawGrid() {
+  stroke('green');
+  strokeWeight(1);
+  const gridSize = 100;
+  for (let x = gridSize; x < width; x += gridSize) {
+    line(x, 0, x, height);
+  }
+  for (let y = gridSize; y < height; y += gridSize) {
+    line(0, y, width, y);
+  }
 }
 
 function drawTanks() {
