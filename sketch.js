@@ -118,11 +118,9 @@ function fireBullet(tank) {
     owner: tank.player
   };
 
-  // For player 1, store the grid location at the time of firing
-  if (tank.player === 1) {
-    bullet.originGridX = floor(tank.x / gridSize);
-    bullet.originGridY = floor(tank.y / gridSize);
-  }
+  // Store the grid location at the time of firing
+  bullet.originGridX = floor(tank.x / gridSize);
+  bullet.originGridY = floor(tank.y / gridSize);
 
   bullets.push(bullet);
 }
@@ -164,20 +162,18 @@ function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     let bullet = bullets[i];
 
-    // For player 1, check for collision with neighboring squares
-    if (bullet.owner === 1) {
-      const gridSize = 100;
-      let bulletGridX = floor(bullet.x / gridSize);
-      let bulletGridY = floor(bullet.y / gridSize);
+    // Check for collision with neighboring squares
+    const gridSize = 100;
+    let bulletGridX = floor(bullet.x / gridSize);
+    let bulletGridY = floor(bullet.y / gridSize);
 
-      // Check if the bullet is in a neighboring square (but not the center one)
-      const inNeighborSquare = Math.abs(bulletGridX - bullet.originGridX) <= 1 && Math.abs(bulletGridY - bullet.originGridY) <= 1;
-      const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
+    // Check if the bullet is in a neighboring square (but not the center one)
+    const inNeighborSquare = Math.abs(bulletGridX - bullet.originGridX) <= 1 && Math.abs(bulletGridY - bullet.originGridY) <= 1;
+    const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
 
-      if (inNeighborSquare && !inCenterSquare) {
-        bullets.splice(i, 1);
-        continue; // Skip to the next bullet
-      }
+    if (inNeighborSquare && !inCenterSquare) {
+      bullets.splice(i, 1);
+      continue; // Skip to the next bullet
     }
 
     bullet.x += bulletSpeed * cos(bullet.angle);
