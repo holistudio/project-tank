@@ -39,7 +39,8 @@ function setup() {
         player1: false,
         player2: false,
         contestedTimestamp: null,
-        fullyCaptured: false
+        fullyCaptured: false,
+        singlePlayerTimestamp: null // Timer for decay
       };
     }
   }
@@ -185,10 +186,25 @@ function updateGridState() {
   for (let i = 0; i < gridCols; i++) {
     for (let j = 0; j < gridRows; j++) {
       let cell = gridState[i][j];
-      // Check if a cell is contested and has been for more than the capture time
+      const isSinglePlayer = (cell.player1 && !cell.player2) || (!cell.player1 && cell.player2);
+
+      // 1. Check for contested cells to become fully captured
       if (cell.contestedTimestamp && !cell.fullyCaptured) {
         if (currentTime - cell.contestedTimestamp > captureTime) {
           cell.fullyCaptured = true;
+          cell.singlePlayerTimestamp = null; // Stop decay timer
+        }
+      }
+
+      // 2. Check for single-player cells to decay back to neutral
+      if (isSinglePlayer && cell.singlePlayerTimestamp) {
+        if (currentTime - cell.singlePlayerTimestamp > captureTime) {
+          // Reset the cell to its initial state
+          cell.player1 = false;
+          cell.player2 = false;
+          cell.contestedTimestamp = null;
+          cell.fullyCaptured = false;
+          cell.singlePlayerTimestamp = null;
         }
       }
     }
@@ -252,15 +268,24 @@ function updateBullets() {
 
     if (inNeighborSquare && !inCenterSquare) {
       let cell = gridState[bulletGridX][bulletGridY];
+      const wasContested = cell.player1 && cell.player2;
+
       if (bullet.owner === 1) {
         cell.player1 = true;
       } else if (bullet.owner === 2) {
         cell.player2 = true;
       }
 
-      // If the cell is now hit by both players and hasn't been contested before, start the timer
-      if (cell.player1 && cell.player2 && !cell.contestedTimestamp) {
-        cell.contestedTimestamp = millis();
+      const isNowContested = cell.player1 && cell.player2;
+      const isNowSinglePlayer = (cell.player1 && !cell.player2) || (!cell.player1 && cell.player2);
+
+      if (isNowContested && !wasContested) {
+        // State changed to contested: start capture timer, stop decay timer.
+        cell.contestedTimestamp = millis(); // Start capture timer
+        cell.singlePlayerTimestamp = null; // Stop decay timer
+      } else if (isNowSinglePlayer) {
+        // State is single-player: start or reset the decay timer.
+        cell.singlePlayerTimestamp = millis();
       }
 
       bullets.splice(i, 1);
