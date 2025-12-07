@@ -34,7 +34,10 @@ function setup() {
   for (let i = 0; i < gridCols; i++) {
     gridState[i] = [];
     for (let j = 0; j < gridRows; j++) {
-      gridState[i][j] = false;
+      gridState[i][j] = {
+        player1: false,
+        player2: false
+      };
     }
   }
 }
@@ -145,9 +148,13 @@ function drawGrid() {
   noStroke();
   for (let i = 0; i < gridCols; i++) {
     for (let j = 0; j < gridRows; j++) {
-      if (gridState[i][j]) {
+      if (gridState[i][j].player1) {
         fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
         rect(i * gridSize, j * gridSize, gridSize, gridSize);
+      }
+      if (gridState[i][j].player2) {
+        // Draw "sprinkles" for player 2
+        drawSprinkles(i, j, gridSize);
       }
     }
   }
@@ -162,6 +169,28 @@ function drawGrid() {
     line(0, y, width, y);
   }
   pop(); // Restore original drawing styles (including rectMode)
+}
+
+function drawSprinkles(gridI, gridJ, size) {
+  push();
+  // Use a single, constant seed to make the sprinkle pattern identical in every cell.
+  randomSeed(1337);
+  stroke('green');
+  strokeWeight(1);
+  for (let i = 0; i < 40; i++) { // Draw 20 "sprinkles"
+    const x = gridI * size;
+    const y = gridJ * size;
+    const sprinkleX = x + random(size);
+    const sprinkleY = y + random(size);
+    const angle = random(TWO_PI);
+    const sprinkleLength = 5;
+    const endX = sprinkleX + sprinkleLength * cos(angle);
+    const endY = sprinkleY + sprinkleLength * sin(angle);
+    line(sprinkleX, sprinkleY, endX, endY);
+  }
+  // Reset the random seed so it doesn't affect other parts of the sketch that use random().
+  randomSeed();
+  pop();
 }
 
 function drawTanks() {
@@ -198,7 +227,11 @@ function updateBullets() {
     const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
 
     if (inNeighborSquare && !inCenterSquare) {
-      gridState[bulletGridX][bulletGridY] = true; // Fill the cell
+      if (bullet.owner === 1) {
+        gridState[bulletGridX][bulletGridY].player1 = true;
+      } else if (bullet.owner === 2) {
+        gridState[bulletGridX][bulletGridY].player2 = true;
+      }
       bullets.splice(i, 1);
       continue; // Skip to the next bullet
     }
