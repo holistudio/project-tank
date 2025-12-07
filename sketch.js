@@ -154,7 +154,7 @@ function drawGrid() {
       }
       if (gridState[i][j].player2) {
         // Draw "sprinkles" for player 2
-        drawSprinkles(i, j, gridSize);
+        drawSeeds(i, j, gridSize);
       }
     }
   }
@@ -171,22 +171,22 @@ function drawGrid() {
   pop(); // Restore original drawing styles (including rectMode)
 }
 
-function drawSprinkles(gridI, gridJ, size) {
+function drawSeeds(gridI, gridJ, size) {
   push();
   // Use a single, constant seed to make the sprinkle pattern identical in every cell.
   randomSeed(1337);
   stroke('green');
   strokeWeight(2);
-  for (let i = 0; i < 40; i++) { // Draw 20 "sprinkles"
+  for (let i = 0; i < 40; i++) { // Draw 20 seeds
     const x = gridI * size;
     const y = gridJ * size;
-    const sprinkleX = x + random(size);
-    const sprinkleY = y + random(size);
+    const seedSprinkX = x + random(size);
+    const seedSprinkY = y + random(size);
     const angle = random(TWO_PI);
-    const sprinkleLength = 5;
-    const endX = sprinkleX + sprinkleLength * cos(angle);
-    const endY = sprinkleY + sprinkleLength * sin(angle);
-    line(sprinkleX, sprinkleY, endX, endY);
+    const seedSprinkLength = 5;
+    const endX = seedSprinkX + seedSprinkLength * cos(angle);
+    const endY = seedSprinkY + seedSprinkLength * sin(angle);
+    line(seedSprinkX, seedSprinkY, endX, endY);
   }
   // Reset the random seed so it doesn't affect other parts of the sketch that use random().
   randomSeed();
