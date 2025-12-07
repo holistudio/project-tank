@@ -4,6 +4,7 @@ let gridState = [];
 const gridCols = 10;
 const gridRows = 10;
 const tankSpeed = 3;
+const captureTime = 5000; // 5 seconds in milliseconds
 const turretSpeed = 0.05;
 const bulletSpeed = 7;
 
@@ -36,7 +37,9 @@ function setup() {
     for (let j = 0; j < gridRows; j++) {
       gridState[i][j] = {
         player1: false,
-        player2: false
+        player2: false,
+        contestedTimestamp: null,
+        fullyCaptured: false
       };
     }
   }
@@ -47,6 +50,7 @@ function draw() {
 
   drawGrid();
 
+  updateGridState();
   handleInput();
 
   updateBullets();
@@ -149,10 +153,15 @@ function drawGrid() {
   for (let i = 0; i < gridCols; i++) {
     for (let j = 0; j < gridRows; j++) {
       if (gridState[i][j].player1) {
-        fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
+        if (gridState[i][j].fullyCaptured) {
+          fill(0, 255, 0); // Fully opaque green
+        } else {
+          fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
+        }
         rect(i * gridSize, j * gridSize, gridSize, gridSize);
       }
-      if (gridState[i][j].player2) {
+      // Only draw seeds if the cell is NOT fully captured
+      if (gridState[i][j].player2 && !gridState[i][j].fullyCaptured) {
         // Draw "sprinkles" for player 2
         drawSeeds(i, j, gridSize);
       }
@@ -169,6 +178,21 @@ function drawGrid() {
     line(0, y, width, y);
   }
   pop(); // Restore original drawing styles (including rectMode)
+}
+
+function updateGridState() {
+  const currentTime = millis();
+  for (let i = 0; i < gridCols; i++) {
+    for (let j = 0; j < gridRows; j++) {
+      let cell = gridState[i][j];
+      // Check if a cell is contested and has been for more than the capture time
+      if (cell.contestedTimestamp && !cell.fullyCaptured) {
+        if (currentTime - cell.contestedTimestamp > captureTime) {
+          cell.fullyCaptured = true;
+        }
+      }
+    }
+  }
 }
 
 function drawSeeds(gridI, gridJ, size) {
@@ -227,11 +251,18 @@ function updateBullets() {
     const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
 
     if (inNeighborSquare && !inCenterSquare) {
+      let cell = gridState[bulletGridX][bulletGridY];
       if (bullet.owner === 1) {
-        gridState[bulletGridX][bulletGridY].player1 = true;
+        cell.player1 = true;
       } else if (bullet.owner === 2) {
-        gridState[bulletGridX][bulletGridY].player2 = true;
+        cell.player2 = true;
       }
+
+      // If the cell is now hit by both players and hasn't been contested before, start the timer
+      if (cell.player1 && cell.player2 && !cell.contestedTimestamp) {
+        cell.contestedTimestamp = millis();
+      }
+
       bullets.splice(i, 1);
       continue; // Skip to the next bullet
     }
