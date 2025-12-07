@@ -1,6 +1,7 @@
 let tanks = [];
 let bullets;
 const tankSpeed = 3;
+const tankRotationSpeed = 0.05;
 const turretSpeed = 0.05;
 const bulletSpeed = 7;
 
@@ -12,6 +13,7 @@ function setup() {
     y: height / 2,
     w: 50,
     h: 40,
+    bodyAngle: 0,
     turretAngle: 0
   });
   // Player 2 (Arrow Keys)
@@ -20,6 +22,7 @@ function setup() {
     y: height / 2,
     w: 50,
     h: 40,
+    bodyAngle: PI,
     turretAngle: PI
   });
   bullets = [];
@@ -38,17 +41,19 @@ function draw() {
 
 function handleInput() {
   // Player 1 Controls (WASD, B, N)
-  if (keyIsDown(87)) { // W
-    tanks[0].y -= tankSpeed;
+  if (keyIsDown(87)) { // W - forward
+    tanks[0].x += tankSpeed * cos(tanks[0].bodyAngle);
+    tanks[0].y += tankSpeed * sin(tanks[0].bodyAngle);
   }
-  if (keyIsDown(83)) { // S
-    tanks[0].y += tankSpeed;
+  if (keyIsDown(83)) { // S - backward
+    tanks[0].x -= tankSpeed * cos(tanks[0].bodyAngle);
+    tanks[0].y -= tankSpeed * sin(tanks[0].bodyAngle);
   }
-  if (keyIsDown(65)) { // A
-    tanks[0].x -= tankSpeed;
+  if (keyIsDown(65)) { // A - rotate left
+    tanks[0].bodyAngle -= tankRotationSpeed;
   }
-  if (keyIsDown(68)) { // D
-    tanks[0].x += tankSpeed;
+  if (keyIsDown(68)) { // D - rotate right
+    tanks[0].bodyAngle += tankRotationSpeed;
   }
   if (keyIsDown(66)) { // B key
     tanks[0].turretAngle -= turretSpeed;
@@ -56,19 +61,20 @@ function handleInput() {
   if (keyIsDown(78)) { // N key
     tanks[0].turretAngle += turretSpeed;
   }
-
   // Player 2 Controls (Arrow Keys, 2, 3)
-  if (keyIsDown(UP_ARROW)) {
-    tanks[1].y -= tankSpeed;
+  if (keyIsDown(UP_ARROW)) { // Forward
+    tanks[1].x += tankSpeed * cos(tanks[1].bodyAngle);
+    tanks[1].y += tankSpeed * sin(tanks[1].bodyAngle);
   }
-  if (keyIsDown(DOWN_ARROW)) {
-    tanks[1].y += tankSpeed;
+  if (keyIsDown(DOWN_ARROW)) { // Backward
+    tanks[1].x -= tankSpeed * cos(tanks[1].bodyAngle);
+    tanks[1].y -= tankSpeed * sin(tanks[1].bodyAngle);
   }
-  if (keyIsDown(LEFT_ARROW)) {
-    tanks[1].x -= tankSpeed;
+  if (keyIsDown(LEFT_ARROW)) { // Rotate left
+    tanks[1].bodyAngle -= tankRotationSpeed;
   }
-  if (keyIsDown(RIGHT_ARROW)) {
-    tanks[1].x += tankSpeed;
+  if (keyIsDown(RIGHT_ARROW)) { // Rotate right
+    tanks[1].bodyAngle += tankRotationSpeed;
   }
   if (keyIsDown(99)) { // Numpad 3
     tanks[1].turretAngle -= turretSpeed;
@@ -117,11 +123,14 @@ function fireBullet(tank) {
 function drawTanks() {
   for (let tank of tanks) {
     // Tank Body
+    push();
+    translate(tank.x, tank.y);
+    rotate(tank.bodyAngle);
     stroke('green');
     strokeWeight(2);
     fill(0);
-    rect(tank.x, tank.y, tank.w, tank.h);
-
+    rect(0, 0, tank.w, tank.h);
+    pop();
     // Turret
     push();
     translate(tank.x, tank.y);
