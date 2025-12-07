@@ -34,7 +34,7 @@ function setup() {
   for (let i = 0; i < gridCols; i++) {
     gridState[i] = [];
     for (let j = 0; j < gridRows; j++) {
-      gridState[i][j] = false;
+      gridState[i][j] = 0; // 0 means not colored, otherwise it's a timestamp
     }
   }
 }
@@ -145,8 +145,16 @@ function drawGrid() {
   noStroke();
   for (let i = 0; i < gridCols; i++) {
     for (let j = 0; j < gridRows; j++) {
-      if (gridState[i][j]) {
-        fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
+      const timestamp = gridState[i][j];
+      if (timestamp > 0) {
+        const timePassed = millis() - timestamp;
+        if (timePassed >= 5000) {
+          // After 5 seconds, become fully opaque
+          fill(0, 255, 0);
+        } else {
+          // Before 5 seconds, stay transparent
+          fill(0, 255, 0, 64); // Green with 75% transparency (25% opacity)
+        }
         rect(i * gridSize, j * gridSize, gridSize, gridSize);
       }
     }
@@ -198,7 +206,10 @@ function updateBullets() {
     const inCenterSquare = bulletGridX === bullet.originGridX && bulletGridY === bullet.originGridY;
 
     if (inNeighborSquare && !inCenterSquare) {
-      gridState[bulletGridX][bulletGridY] = true; // Fill the cell
+      // If the cell hasn't been hit before, record the time
+      if (gridState[bulletGridX][bulletGridY] === 0) {
+        gridState[bulletGridX][bulletGridY] = millis();
+      }
       bullets.splice(i, 1);
       continue; // Skip to the next bullet
     }
