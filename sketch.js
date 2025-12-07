@@ -176,7 +176,7 @@ function drawSprinkles(gridI, gridJ, size) {
   // Use a single, constant seed to make the sprinkle pattern identical in every cell.
   randomSeed(1337);
   stroke('green');
-  strokeWeight(1);
+  strokeWeight(2);
   for (let i = 0; i < 40; i++) { // Draw 20 "sprinkles"
     const x = gridI * size;
     const y = gridJ * size;
