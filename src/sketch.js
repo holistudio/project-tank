@@ -99,10 +99,10 @@ function handleInput() {
   if (keyIsDown(RIGHT_ARROW)) { // Rotate right
     tanks[1].bodyAngle += tankRotationSpeed;
   }
-  if (keyIsDown(99)) { // Numpad 3
+  if (keyIsDown(98)) { // Numpad 2
     tanks[1].turretAngle -= turretSpeed;
   }
-  if (keyIsDown(98)) { // Numpad 2
+  if (keyIsDown(99)) { // Numpad 3
     tanks[1].turretAngle += turretSpeed;
   }
 
