@@ -27,7 +27,7 @@ two tanks growing stuff together on a farm, instead of shooting at each other.
 ```
 
 
-## Story
+## Story 📖
 
 While I was at [The Recurse Center](https://recurse.com), folks there bought and set up an arcade cabinet ([RCade](https://rcade.recurse.com)) where anyone could publish their game onto via GitHub.
 
