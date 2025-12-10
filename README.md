@@ -1,8 +1,8 @@
-# project-tank
+# project-tank 🪖🌱🌻
 
 two tanks growing stuff together on a farm, instead of shooting at each other.
 
-## Controls
+## Controls 🕹️
 
 ```
   | Key         | Action           |
