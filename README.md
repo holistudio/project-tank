@@ -50,10 +50,14 @@ Then I made player 1's tank shoot out water while player 2's tank plants seeds, 
 
 <img src="assets/3_cooperative_planting.png" width="300 px">
 
-This is the current state of the game for now. It has also been ported to an [RCade version](https://github.com/holistudio/tank-farm), displayed on a smaller screen.
+This is the current state of the game for now. It has also been ported to an [RCade version](https://github.com/holistudio/tank-farm), displayed on a smaller screen:
 
 <img src="assets/4_rcade.png" width="300 px">
 
 And it's now live at RCade :)
 
 <img src="assets/5_rcade_irl.png" width="300 px">
+
+It's fair to say that 100% of the code was vibecoded with Gemini - but 100% of the ideas came from me.
+
+This was done so that I could learn how to port a game to the RCade system rather than spend time making a game from scratch. (And it turned out that even when I tried vibe-coding the port to a smaller RCade screen, Gemini ended up creating a few bugs that I had to fix anyway. So all in all, a real coding experience of understanding someone else's code and debugging it)
